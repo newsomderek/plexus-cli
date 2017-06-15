@@ -26,7 +26,7 @@ let compileActions = (plex) => {
     return actions;
 }
 
-let findAction = (nodeId, node) => {
+let findAction = (nodeId) => {
     let actions = compileActions(PLEX);
     let actionKey = nodeId.split('_')[0];
 
@@ -35,36 +35,31 @@ let findAction = (nodeId, node) => {
 
 
 let run = (nodeId, node) => new Promise((resolve, reject) => {
-    let action = findAction(nodeId, node);
+    let action = findAction(nodeId);
     let params = node.params || [];
     
-    if(action) {
+    if(!action) return reject(`${nodeId} is not an available action`);
 
-        action(_, params[0]).then(res => {
+    action(_, params[0]).then(res => {
 
-            // load return into global context
-            _[nodeId] = {result: res};
+        // load return into global context
+        _[nodeId] = {result: res};
 
-            // traverse through child action nodes
-            node.edges.forEach(edge => {
-                let next = testFlow.nodes[edge];
+        // traverse through child action nodes
+        node.edges.forEach(edge => {
+            let next = testFlow.nodes[edge];
 
-                if(next) {
-                    run(edge, next).then(result => {
-                        console.log(`RUN RESULT: ${JSON.stringify(result)}`);
-                    }).catch(reason => {
-                        console.log(`RUN ERROR: ${reason}`);  
-                    });
-                }
+            if(!next) return;
+
+            run(edge, next).then(result => {
+                console.log(`RUN RESULT: ${JSON.stringify(result)}`);
+            }).catch(reason => {
+                console.log(`RUN ERROR: ${reason}`);  
             });
-
-            return resolve(res);
-
         });
 
-    } else {
-        return reject(`${nodeId} is not an available action`);
-    }
+        return resolve(res);
+    });
 
 });
 
