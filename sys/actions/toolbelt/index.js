@@ -13,7 +13,7 @@ module.exports = {
     }),
 
     httpRequest: (_, {url, method='get', body={}}) => new Promise((resolve, reject) => {
-        axios.get(url).then(res => {
+        axios[method](url, body).then(res => {
             return resolve(res.data);
         }).catch(err => {
             return reject(err);
