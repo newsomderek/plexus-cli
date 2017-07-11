@@ -6,14 +6,12 @@ const fs = require('fs');
 const PLEX = require('./sys/plex.js');
 const ACTIONS = PLEX.util.compileActions();
 
-let context = {};
-
 // global context value store
 let _  = {};
 
 try {
     // load any context from file if it exists
-    context = JSON.parse(fs.readFileSync('context.json', 'utf8'));   
+    let context = JSON.parse(fs.readFileSync('contextt.json', 'utf8'));   
     Object.assign(_, context); 
 } catch (err) {
 
