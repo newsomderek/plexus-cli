@@ -1,16 +1,23 @@
 
 const TEST_FLOW = require('./flows/test-flow.js');
 
+const fs = require('fs');
+
 const PLEX = require('./sys/plex.js');
 const ACTIONS = PLEX.util.compileActions();
 
-const mockData = {name: 'Derek Newsom', age: 27, job: 'Developer'};
+let context = {};
 
-// global value store
+// global context value store
 let _  = {};
 
-// load trigger info into global context
-_.trigger  = {result: mockData};
+try {
+    // load any context from file if it exists
+    context = JSON.parse(fs.readFileSync('context.json', 'utf8'));   
+    Object.assign(_, context); 
+} catch (err) {
+
+}
 
 let run = (nodeId, node) => new Promise((resolve, reject) => {
     let action = PLEX.util.findActionByNodeId(ACTIONS, nodeId);
