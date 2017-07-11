@@ -4,7 +4,7 @@ const axios = require('axios');
 
 module.exports = {
 
-    textToJSON: (_, text) => new Promise((resolve, reject) => {
+    textToJSON: (_, {text=''}) => new Promise((resolve, reject) => {
         return resolve(JSON.parse(text));
     }),
 
@@ -12,7 +12,7 @@ module.exports = {
         return resolve(uuidV4());
     }),
 
-    httpRequest: (_, url, method='get', body={}) => new Promise((resolve, reject) => {
+    httpRequest: (_, {url, method='get', body={}}) => new Promise((resolve, reject) => {
         axios.get(url).then(res => {
             return resolve(res.data);
         }).catch(err => {
@@ -20,7 +20,7 @@ module.exports = {
         });
     }),
 
-    textTemplate: (_, template, data) => new Promise((resolve, reject) => {
+    textTemplate: (_, {template, data}) => new Promise((resolve, reject) => {
         var tpl = eval('`' + template + '`');
         return resolve(tpl);
     })

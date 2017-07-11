@@ -18,7 +18,7 @@ let run = (nodeId, node) => new Promise((resolve, reject) => {
 
     if(!action) return reject(`${nodeId} is not an available action`);
 
-    action(_, params[0]).then(res => {
+    action(_, params).then(res => {
 
         // load return into global context
         _[nodeId] = {result: res};
