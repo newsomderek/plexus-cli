@@ -1,5 +1,5 @@
 
-const TEST_FLOW = require('./flows/test-flow.js');
+let flow;
 
 const fs = require('fs');
 
@@ -9,10 +9,17 @@ const ACTIONS = PLEX.util.compileActions();
 // global context value store
 let _  = {};
 
-try {
-    // load any context from file if it exists
+// load any context from file if it exists
+try {    
     let context = JSON.parse(fs.readFileSync('context.json', 'utf8'));   
     Object.assign(_, context); 
+} catch (err) {
+
+}
+
+// try to load flow details from global context
+try {    
+    if(_.flow) flow = require(_.flow);
 } catch (err) {
 
 }
@@ -29,7 +36,7 @@ let run = (nodeId, node) => new Promise((resolve, reject) => {
 
         // traverse through child action nodes
         node.edges.forEach(edge => {
-            let next = TEST_FLOW.nodes[edge];
+            let next = flow.nodes[edge];
 
             if(!next) return;
 
@@ -45,13 +52,19 @@ let run = (nodeId, node) => new Promise((resolve, reject) => {
 
 });
 
-let source = {
-    edge: TEST_FLOW.source,
-    node: TEST_FLOW.nodes[TEST_FLOW.source]
-};
+if(flow) {
+    
+    let source = {
+        edge: flow.source,
+        node: flow.nodes[flow.source]
+    };
 
-run(source.edge, source.node).then(result => {
+    run(source.edge, source.node).then(result => {
 
-}).catch(reason => {
-    console.log(`ERROR: ${reason}`);
-});
+    }).catch(reason => {
+        console.log(`ERROR: ${reason}`);
+    });
+    
+} else {
+    console.log('No flow found to execute');
+}
