@@ -14,11 +14,10 @@ _.trigger  = {result: mockData};
 
 let run = (nodeId, node) => new Promise((resolve, reject) => {
     let action = PLEX.util.findActionByNodeId(ACTIONS, nodeId);
-    let params = node.params || [];
 
     if(!action) return reject(`${nodeId} is not an available action`);
 
-    action(_, params).then(res => {
+    action(_, node.params).then(res => {
 
         // load return into global context
         _[nodeId] = {result: res};
