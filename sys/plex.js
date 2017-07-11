@@ -1,6 +1,28 @@
 
-let toolbeltActions = require('./actions/toolbelt');
+let toolbelt = require('./actions/toolbelt');
+
+let actions = {
+    toolbelt
+};
 
 module.exports = {
-    toolbelt: toolbeltActions
+    util: {
+        compileActions: () => {
+            let actionMap = {};
+
+            Object.keys(actions).forEach(pod => {
+
+                Object.keys(actions[pod]).forEach(actionKey => {
+                    let action = actions[pod][actionKey];
+                    
+                    actionMap[actionKey] = actions[`${pod}.${actionKey}`] = action;
+                });
+
+            });
+
+            return actionMap;
+        }
+        
+    },
+    actions
 }

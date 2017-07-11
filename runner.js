@@ -10,29 +10,12 @@ let _  = {};
 // load trigger info into global context
 _.trigger  = {result: mockData};
 
-let compileActions = (plex) => {
-    let actions = {};
-
-    Object.keys(plex).forEach(pod => {
-
-        Object.keys(plex[pod]).forEach(actionKey => {
-            let action = plex[pod][actionKey];
-            
-            actions[actionKey] = actions[`${pod}.${actionKey}`] = action;
-        });
-
-    });
-
-    return actions;
-}
-
 let findAction = (nodeId) => {
-    let actions = compileActions(PLEX);
+    let actions = PLEX.util.compileActions();
     let actionKey = nodeId.split('_')[0];
 
     return actions[actionKey];
 };
-
 
 let run = (nodeId, node) => new Promise((resolve, reject) => {
     let action = findAction(nodeId);
