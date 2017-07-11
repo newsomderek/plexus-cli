@@ -1,6 +1,8 @@
 
-const testFlow = require('./flows/test-flow.js');
+const TEST_FLOW = require('./flows/test-flow.js');
+
 const PLEX = require('./sys/plex.js');
+const ACTIONS = PLEX.util.compileActions();
 
 const mockData = {name: 'Derek Newsom', age: 27, job: 'Developer'};
 
@@ -10,17 +12,10 @@ let _  = {};
 // load trigger info into global context
 _.trigger  = {result: mockData};
 
-let findAction = (nodeId) => {
-    let actions = PLEX.util.compileActions();
-    let actionKey = nodeId.split('_')[0];
-
-    return actions[actionKey];
-};
-
 let run = (nodeId, node) => new Promise((resolve, reject) => {
-    let action = findAction(nodeId);
+    let action = PLEX.util.findActionByNodeId(ACTIONS, nodeId);
     let params = node.params || [];
-    
+
     if(!action) return reject(`${nodeId} is not an available action`);
 
     action(_, params[0]).then(res => {
@@ -30,7 +25,7 @@ let run = (nodeId, node) => new Promise((resolve, reject) => {
 
         // traverse through child action nodes
         node.edges.forEach(edge => {
-            let next = testFlow.nodes[edge];
+            let next = TEST_FLOW.nodes[edge];
 
             if(!next) return;
 
@@ -47,8 +42,8 @@ let run = (nodeId, node) => new Promise((resolve, reject) => {
 });
 
 let source = {
-    edge: testFlow.source,
-    node: testFlow.nodes[testFlow.source]
+    edge: TEST_FLOW.source,
+    node: TEST_FLOW.nodes[TEST_FLOW.source]
 };
 
 run(source.edge, source.node).then(result => {
